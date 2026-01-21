@@ -60,22 +60,22 @@ function App() {
 
   const reportText = `Total lead = ${counts.totalLeads}
 
-Total Answerd = ${totalAnswered} 
+Total Answered = ${totalAnswered} 
 1- New Call = ${counts.newCall}
-2- Follow up = ${counts.followUp}
-3- wrong data = ${counts.wrongData}
-4- GateKepper = ${counts.gatekeeper}
+2- Follow Up = ${counts.followUp}
+3- Wrong Data = ${counts.wrongData}
+4- Gatekeeper = ${counts.gatekeeper}
 
-Qulified = ${counts.qualified} || Not Qulifed = ${counts.notQualified}
+Qualified = ${counts.qualified} || Not Qualified = ${counts.notQualified}
 
-No Answerd = ${calculatedNoAnswer}`;
+No Answer = ${calculatedNoAnswer}`;
 
   return (
     <>
       <div className="container mx-auto flex flex-col min-h-screen justify-center items-center py-10">
         <div className="flex flex-col bg-white rounded-xl shadow-xl p-8 m-2 w-full max-w-3xl">
           <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
-            Lead Report Handler
+            Leads Report Handler
           </h1>
           <div className="flex justify-between items-center bg-gray-50 p-4 rounded-lg mb-6">
             <label htmlFor="totalLeads" className="text-gray-700 font-bold text-lg">
@@ -104,14 +104,25 @@ No Answerd = ${calculatedNoAnswer}`;
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-lg mb-6">
             <CalcFiled
-              label="follow up"
+              label="New Call"
+              value={counts.newCall}
+              onChange={(val) => updateCount("newCall", val)}
+            />
+            <CalcFiled
+              label="Follow Up"
               value={counts.followUp}
               onChange={(val) => updateCount("followUp", val)}
             />
+
             <CalcFiled
-              label="New call"
-              value={counts.newCall}
-              onChange={(val) => updateCount("newCall", val)}
+              label="Qualified"
+              value={counts.qualified}
+              onChange={(val) => updateCount("qualified", val)}
+            />
+            <CalcFiled
+              label="Not Qualified"
+              value={counts.notQualified}
+              onChange={(val) => updateCount("notQualified", val)}
             />
           </div>
 
@@ -128,19 +139,6 @@ No Answerd = ${calculatedNoAnswer}`;
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-lg mb-6">
-            <CalcFiled
-              label="Qulified"
-              value={counts.qualified}
-              onChange={(val) => updateCount("qualified", val)}
-            />
-            <CalcFiled
-              label="Not Qulified"
-              value={counts.notQualified}
-              onChange={(val) => updateCount("notQualified", val)}
-            />
-          </div>
-
           <div className="flex justify-center space-x-4 mt-6">
             <button
               className="bg-blue-600 text-white font-bold py-2 px-8 rounded-lg hover:bg-blue-700 transition-colors shadow-md"
@@ -149,7 +147,7 @@ No Answerd = ${calculatedNoAnswer}`;
               Report
             </button>
             <button
-              className="bg-gray-500 text-white font-bold py-2 px-8 rounded-lg hover:bg-gray-600 transition-colors shadow-md"
+              className="bg-red-500 text-white font-bold py-2 px-8 rounded-lg hover:bg-red-600 transition-colors shadow-md"
               onClick={handleReset}
             >
               Reset
