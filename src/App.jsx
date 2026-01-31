@@ -166,7 +166,7 @@ ${(counts.dncrList || []).map((name, i) => `${i + 1}- ${name}`).join("\n")}`;
             <form onSubmit={handleDncrSubmit} className="flex gap-2 items-center">
               <input
                 type="text"
-                className="border border-gray-300 rounded px-2 py-1 flex-grow focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded px-2 py-1 grow focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Add DNCR name"
                 value={dncrInput}
                 onChange={(e) => setDncrInput(e.target.value)}
