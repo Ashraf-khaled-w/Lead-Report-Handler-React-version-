@@ -3,19 +3,35 @@ import CalcFiled from "./UI/CalcFiled";
 function App() {
   const [counts, setCounts] = useState(() => {
     const savedCounts = localStorage.getItem("leadReportCounts");
-    return savedCounts
-      ? JSON.parse(savedCounts)
-      : {
-          totalLeads: 0,
-          wrongNumber: 0,
-          noAnswer: 0,
-          followUp: 0,
-          newCall: 0,
-          qualified: 0,
-          notQualified: 0,
-          gatekeeper: 0,
-          wrongData: 0,
-        };
+    const initialCounts = {
+      totalLeads: 0,
+      wrongNumber: 0,
+      noAnswer: 0,
+      followUp: 0,
+      newCall: 0,
+      qualified: 0,
+      notQualified: 0,
+      gatekeeper: 0,
+      wrongData: 0,
+      dncr: 0,
+      dncrList: [],
+    };
+
+    if (savedCounts) {
+      const parsed = JSON.parse(savedCounts);
+      // Migrate old uppercase DNCR if it exists and dncr is missing
+      if (parsed.DNCR !== undefined && parsed.dncr === undefined) {
+        parsed.dncr = parsed.DNCR;
+        delete parsed.DNCR;
+      }
+      // Ensure dncrList exists
+      if (!parsed.dncrList) {
+        parsed.dncrList = [];
+      }
+      return { ...initialCounts, ...parsed };
+    }
+
+    return initialCounts;
   });
 
   useEffect(() => {
@@ -23,9 +39,21 @@ function App() {
   }, [counts]);
 
   const [showReport, setShowReport] = useState(false);
+  const [dncrInput, setDncrInput] = useState("");
 
   const updateCount = (field, value) => {
     setCounts((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleDncrSubmit = (e) => {
+    e.preventDefault();
+    if (!dncrInput.trim()) return;
+    setCounts((prev) => ({
+      ...prev,
+      dncr: prev.dncr + 1,
+      dncrList: [...(prev.dncrList || []), dncrInput],
+    }));
+    setDncrInput("");
   };
 
   const handleReset = () => {
@@ -39,6 +67,8 @@ function App() {
       notQualified: 0,
       gatekeeper: 0,
       wrongData: 0,
+      dncr: 0,
+      dncrList: [],
     });
     setShowReport(false);
   };
@@ -56,7 +86,7 @@ function App() {
       counts.wrongData);
 
   const totalAnswered =
-    counts.newCall + counts.followUp + counts.wrongData + counts.gatekeeper;
+    counts.newCall + counts.followUp + counts.wrongData + counts.gatekeeper + counts.dncr;
 
   const reportText = `Total lead = ${counts.totalLeads}
 
@@ -66,9 +96,13 @@ Total Answered = ${totalAnswered}
 3- Wrong Data = ${counts.wrongData}
 4- Gatekeeper = ${counts.gatekeeper}
 
-Qualified = ${counts.qualified} || Not Qualified = ${counts.notQualified}
+Qualified = ${counts.qualified} || Not Qualified = ${counts.notQualified} ||  DNCR = ${counts.dncr}
 
 No Answer = ${calculatedNoAnswer}`;
+
+  const reportDncr = `DNCR Count = ${counts.dncr}
+List:
+${(counts.dncrList || []).map((name, i) => `${i + 1}- ${name}`).join("\n")}`;
 
   return (
     <>
@@ -120,10 +154,30 @@ No Answer = ${calculatedNoAnswer}`;
               onChange={(val) => updateCount("qualified", val)}
             />
             <CalcFiled
+              label="DNCR"
+              value={counts.dncr}
+              onChange={(val) => updateCount("dncr", val)}
+            />
+            <CalcFiled
               label="Not Qualified"
               value={counts.notQualified}
               onChange={(val) => updateCount("notQualified", val)}
             />
+            <form onSubmit={handleDncrSubmit} className="flex gap-2 items-center">
+              <input
+                type="text"
+                className="border border-gray-300 rounded px-2 py-1 flex-grow focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Add DNCR name"
+                value={dncrInput}
+                onChange={(e) => setDncrInput(e.target.value)}
+              />
+              <button
+                type="submit"
+                className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors text-sm font-bold"
+              >
+                Add
+              </button>
+            </form>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded-lg mb-6">
@@ -156,13 +210,23 @@ No Answer = ${calculatedNoAnswer}`;
         </div>
 
         {showReport && (
-          <div className="flex flex-col bg-white rounded-xl shadow-xl p-8 m-2 w-full max-w-3xl mt-6">
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">Generated Report</h2>
-            <textarea
-              className="w-full h-64 p-4 border border-gray-300 rounded-lg font-mono text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              readOnly
-              value={reportText}
-            />
+          <div className="flex flex-col bg-white rounded-xl shadow-xl p-8 m-2 w-full max-w-3xl mt-6 space-y-4">
+            <div>
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">Generated Report</h2>
+              <textarea
+                className="w-full h-64 p-4 border border-gray-300 rounded-lg font-mono text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                readOnly
+                value={reportText}
+              />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold mb-2 text-gray-800">DNCR List</h3>
+              <textarea
+                className="w-full h-64 p-4 border border-gray-300 rounded-lg font-mono text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                readOnly
+                value={reportDncr}
+              />
+            </div>
           </div>
         )}
       </div>
