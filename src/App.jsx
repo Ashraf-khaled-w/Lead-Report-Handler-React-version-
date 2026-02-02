@@ -96,6 +96,8 @@ Total Answered = ${totalAnswered}
 3- Wrong Data = ${counts.wrongData}
 4- Gatekeeper = ${counts.gatekeeper}
 
+Wrong Number = ${counts.wrongNumber}
+
 Qualified = ${counts.qualified} || Not Qualified = ${counts.notQualified} ||  DNCR = ${counts.dncr}
 
 No Answer = ${calculatedNoAnswer}`;
