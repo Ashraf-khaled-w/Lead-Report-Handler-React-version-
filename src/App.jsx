@@ -86,7 +86,7 @@ function App() {
       counts.wrongData);
 
   const totalAnswered =
-    counts.newCall + counts.followUp + counts.wrongData + counts.gatekeeper + counts.dncr;
+    counts.newCall + counts.followUp + counts.wrongData + counts.gatekeeper;
 
   const reportText = `Total lead = ${counts.totalLeads}
 
